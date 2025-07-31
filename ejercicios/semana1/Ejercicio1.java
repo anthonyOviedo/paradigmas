@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.stream.*;
 
-public class ejercicio1 {
+public class Ejercicio1 {
     public static void main(String[] args) {
         // Crear instancias singleton
         Esposo esposo = Esposo.getInstance("Luis", 30, "Ver feliz a Ana");

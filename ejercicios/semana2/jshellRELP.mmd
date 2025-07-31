@@ -1,0 +1,10 @@
+flowchart TD
+    A[Input to JShell] --> B[Lexical and Syntax Analysis]
+    B --> C[Static Semantic Analysis]
+    C --> D[Bytecode Generation]
+    D --> E[Bytecode Loading in JVM]
+    E --> F[Execute Code & Display Result]
+    F --> A[New Input to JShell]
+
+
+%%  Read-Eval-Print Loop
