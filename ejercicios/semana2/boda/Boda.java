@@ -11,7 +11,6 @@ public class Boda {
     }
 
     public static void registrar(Person... personas) {
-        System.out.println("[Debug]Registrando personas");
         invitados.addAll(Arrays.asList(personas));
     }
 
@@ -22,7 +21,6 @@ public class Boda {
 
     public static void registrar(List<Person> personas, Role... roles) {
         for (Role r : roles) {
-            System.out.println("[Debug] asignando la el rol "+ r.name );
             personas.forEach(p -> p.asignarRol(r));
         }
         invitados.addAll(personas);
