@@ -1,10 +1,9 @@
-package boda;
+package boda.test;
 
-import java.util.*;
-
-import boda.Boda;
+import boda.*;
 import static boda.Boda.*;
 
+import java.util.*;
 
 public class TestBoda {
     public static void main(String[] args) {
@@ -12,25 +11,22 @@ public class TestBoda {
     }
 
     static void testAll() {
-        // Actores y Roles
         var ana = new Mujer("Ana");
         var luis = new Varon("Luis");
         var maria = new Mujer("María");
         var pedro = new Varon("Pedro");
         var refugios = new Varon("Refugios");
 
-        Boda.registrar(pedro, refugios);
-        Boda.registrar(ana, new DaDiscurso(), new FirmaComoTestigo());
-        Boda.registrar(Arrays.asList(luis, maria),
-                    new Pareja(), new BailaVals());
+        registrar(pedro, refugios);
+        registrar(ana, new DaDiscurso(), new FirmaComoTestigo());
+        registrar(Arrays.asList(luis, maria),
+                  new Pareja(), new BailaVals());
 
-        Boda.participantes();
+        participantes();
 
-        // Eventos
-        Boda.atencion("Probando Evento: Casamiento", Evento.JURAMENTO);
-        Boda.atencion("Probando Evento: Firma", Evento.FIRMA);
-        Boda.atencion("Probando Evento: Brindis", Evento.BRINDIS);
-        Boda.atencion("Probando Evento: Vals", Evento.VALS);
+        atencion("Probando Evento: Casamiento", Evento.JURAMENTO);
+        atencion("Probando Evento: Firma", Evento.FIRMA);
+        atencion("Probando Evento: Brindis", Evento.BRINDIS);
+        atencion("Probando Evento: Vals", Evento.VALS);
     }
-
 }
