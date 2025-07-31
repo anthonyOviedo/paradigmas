@@ -6,23 +6,26 @@ public class Boda {
     private static List<Person> invitados = new ArrayList<>();
 
     public static void participantes() {
+        System.err.println("*** Casting ***");
         invitados.forEach(p -> System.out.println(p.presentarse()));
     }
 
-    public static void registrar(Person p, Role... roles) {
-        for (Role r : roles) {
-            p.asignarRol(r);
-        }
+    public static void registrar(Person... personas) {
+        System.out.println("[Debug]Registrando personas");
+        invitados.addAll(Arrays.asList(personas));
     }
 
-    public static void registrar(Person... personas) {
-        invitados.addAll(Arrays.asList(personas));
+    public static void registrar(Person p, Role... roles) {
+        invitados.add(p);
+        p.asignarRoles(roles);
     }
 
     public static void registrar(List<Person> personas, Role... roles) {
         for (Role r : roles) {
+            System.out.println("[Debug] asignando la el rol "+ r.name );
             personas.forEach(p -> p.asignarRol(r));
         }
+        invitados.addAll(personas);
     }
 
     public static void atencion(String anuncio, Evento e) {
@@ -45,23 +48,36 @@ class Person {
         hats.add(role);
     }
 
+    public void asignarRoles(Role... roles) {
+        hats.addAll(Arrays.asList(roles));
+    }
+
     public String presentarse() {
-        return "Hola mi nombre es: " + name;
+        String result = "";
+        result += name + ":\n";
+        if (hats.isEmpty())
+            	result += "\t" + ".sin Rol"; 
+        else 
+            for (Role r : hats)
+                result += "\t"+".como "+r.getName()+"\n"; 
+
+        return result;
     }
 
-    public String performRole(Evento e) {
-        if (hats.isEmpty()) {
+    public String performRole(Evento e){
+        String result = "";
+        if (hats.isEmpty())
             return name + (Math.random() < 0.5 ? " llora\n" : " ríe\n");
-        }
 
-        StringBuilder result = new StringBuilder();
-        for (Role r : hats) {
-            if (r.when == e) {
-                result.append(name).append(": ").append(r.action).append("\n");
+        else  {
+            for (Role h : hats){
+                if (h.when == e)
+                    result = name + " " +result+h.action+"\n";
             }
-        }
-        return result.toString();
+        }    
+        return result;
     }
+
 }
 
 class Mujer extends Person {
@@ -77,64 +93,50 @@ class Varon extends Person {
 }
 
 class Role {
+    String name;
     String action;
     Evento when;
 
-    public Role(String action) {
+    public Role(String action,String name,Evento e) {
+        this.name = name;
         this.action = action;
-        this.when = null;
+        this.when = e;
     }
+    
+    public String getName(){return this.name;}
 
-    public void setEvent(Evento when) {
-        this.when = when;
-    }
 }
 
 class FirmaComoTestigo extends Role {
-    public FirmaComoTestigo(String action) {
-        super(action);
-        setEvent(Evento.FIRMA);
-    }
-
     public FirmaComoTestigo() {
-        super("firma como testigo ");
-        setEvent(Evento.FIRMA);
+        super("firma como testigo ","Testificante",Evento.FIRMA);
     }
 }
 
 class DaDiscurso extends Role {
     public DaDiscurso(String action) {
-        super(action);
-        setEvent(Evento.BRINDIS);
+        super(action, "Discursante",Evento.BRINDIS);
     }
 
     public DaDiscurso() {
-        super("Da un muy bonito discurso");
-        setEvent(Evento.BRINDIS);
+        super("Da un muy bonito discurso","Discursante",Evento.BRINDIS);
     }
 }
 
 class Pareja extends Role {
-    public Pareja(String action) {
-        super(action);
-        setEvent(Evento.JURAMENTO);
-    }
-
     public Pareja() {
-        super("Da el Si");
-        setEvent(Evento.JURAMENTO);
+        super("Da el Si","Pareja",Evento.JURAMENTO);
     }
 }
 
 class BailaVals extends Role {
+
     public BailaVals(String action) {
-        super(action);
-        setEvent(Evento.VALS);
+        super(action,"Bailante",Evento.VALS);
     }
 
     public BailaVals() {
-        super("baila su primer Balz");
-        setEvent(Evento.VALS);
+        super("baila su primer Balz","Bailante",Evento.VALS);
     }
 }
 
