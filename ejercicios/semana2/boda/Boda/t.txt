@@ -1,0 +1,30 @@
+Pedro:
+	.sin Rol
+Refugios:
+	.sin Rol
+Ana:
+	.como Discursante
+	.como Testificante
+
+Luis:
+	.como Pareja
+	.como Bailante
+
+María:
+	.como Pareja
+	.como Bailante
+
+Pedro ríe
+Refugios llora
+Luis Da el Si
+María Da el Si
+Pedro ríe
+Refugios ríe
+Ana firma como testigo 
+Pedro llora
+Refugios llora
+Ana Da un muy bonito discurso
+Pedro ríe
+Refugios llora
+Luis baila su primer Balz
+María baila su primer Balz

@@ -16,7 +16,8 @@ public class TestBoda {
         var pedro = new Varon("Pedro");
         var refugios = new Varon("Refugios");
 
-        Boda.registrar(pedro, refugios);
+        Boda.registrar(pedro);
+        Boda.registrar(refugios, new DaDiscurso("un discurso todo culo"));
         Boda.registrar(ana, new DaDiscurso(), new FirmaComoTestigo());
         Boda.registrar(Arrays.asList(luis, maria),
                     new Pareja(), new BailaVals());

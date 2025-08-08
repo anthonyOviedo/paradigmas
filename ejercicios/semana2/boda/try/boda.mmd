@@ -1,0 +1,59 @@
+classDiagram
+    %% Paquetes y clases principales
+    class Boda {
+        +List~Person~ invitados
+        +participantes()
+        +registrar(Person... personas)
+        +registrar(Person p, Role... roles)
+        +registrar(List~Person~ personas, Role... roles)
+        +atencion(String anuncio, Evento e)
+    }
+
+    class Person {
+        -List~Role~ hats
+        -String name
+        +Person(String name)
+        +asignarRol(Role role)
+        +asignarRoles(Role... roles)
+        +presentarse() String
+        +performRole(Evento e) String
+    }
+    class Mujer
+    class Varon
+
+    class Role {
+        -String name
+        -String action
+        -Evento when
+        +Role(String action, String name, Evento when)
+        +getName() String
+    }
+    class FirmaComoTestigo
+    class DaDiscurso
+    class Pareja
+    class BailaVals
+
+    class Evento {
+        <<enumeration>>
+        JURAMENTO
+        FIRMA
+        BRINDIS
+        VALS
+    }
+
+    %% Herencias
+    Person <|-- Mujer
+    Person <|-- Varon
+
+    Role <|-- FirmaComoTestigo
+    Role <|-- DaDiscurso
+    Role <|-- Pareja
+    Role <|-- BailaVals
+
+    %% Asociaciones
+    Boda "1" o-- "*" Person : invitados
+    Boda ..> Role : registra/asigna
+    Boda ..> Evento : atencion
+
+    Person "1" o-- "*" Role : hats
+    Role ..> Evento : when
