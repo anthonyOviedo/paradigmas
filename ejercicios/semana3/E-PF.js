@@ -36,7 +36,9 @@ console.log("C: "+id("perro"))
 // repeat(0, id)(666) // retorna 666
 // repeat(5, x => 2 * x)(1) // retorna 32
 
-const repeat = (n,f) => n === 0 ?  f : x=>repeat(n-1,f)(x) 
+//const repeat = (n,f) => n === 0 ?  f : x=>repeat(n-1,f)(x) 
+const repeat = (n, f) => n === 0 ? x=>x : x => repeat(n - 1, f)(f(x));
+
 
 var d = repeat(5, x => 2 * x)(1) // retorna 32
 console.log("REPEAT: "+ repeat)
