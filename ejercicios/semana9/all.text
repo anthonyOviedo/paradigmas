@@ -1,0 +1,101 @@
+Conceptos
+
+    Evaluar: recorrer AST siguiendo estrategias.
+    Estrategias: en que orden se recorre el AST. Qué tan profundo bajar.
+        Eager (aplicativa estricta). Full post-order
+        Lazy (por demanda, orden normal) . Post-order solo hasta donde sea necesaria. Ventajas/Desventajas
+    Reducciones \beta y \alpha: conceptual versus implementación (ingeniería) usando clausuras
+    State: memoria a la que el código tiene acceso (Alias Scope, Context)
+    Clausura: objeto que encapsula lambda + memoria local con acceso a la clausura padre y sirve como memoria de una lambda. Nota: este tema debemos desarrollarlo mas el próximo lunes. 
+
+INICIO RESUMEN CLAUSURAS
+Hago un resumen acá sobre clausuras: La idea es que toda lambda se representa como un objeto que tiene la memoria (state) de los parámetros y variable locales de la lambda.
+A ese objeto se le llama una clausura. Además este objeto apunta a la memoria (state) de la clausura en la que se creó la lambda.
+	Ejemplo:
+	Asuma un archivo test.js que define como tal un state con la compilación y evaluación  de la siguientes declaraciones en el mismo:
+const a = 1
+let b = "hola"
+const foo = x => x + a
+console.log(foo(b))
+
+Habría un state de test.js (digamos test_state) en el que viven esos identificadores. Figurativamente lo podemos visualizar como si fuera una especie de  diccionario:
+	  test_state = {a:1, b: "hola", foo: clausura({x:null, parent_state: test_state}, lambda: x => fx + a }
+	 
+ Al evaluar por ejemplo foo(b) en test.js (aplicativamente, piense en el AST de foo(b)) se hace lo siguiente:
+	  a) Se evalúa foo que significa buscarlo en el test_state donde tiene como valor la clausura
+	  clausura({x:null, parent_state: test_state}, lambda: x => x + a }  notando que x no tiene un valor real, digamos tiene null.
+	  b) Se evalúa b, igualmente se busca en el state test_state y se encuentra como la hilera "hola"
+	  c) Se hace la aplicación o beta reducción foo(b), para eso:
+	     c1) Se actualiza primero el state a {x:"hola", parent_state: test_state}
+	     c2) Se evalua x + a en el state de la clausura actualizado. Es decir,
+		     c2.1) Se evalúa x en el state de la clausura que resulta en acceder a "hola"
+		     c2.2  Se evalúa a en el state de la clausura, pero como no está ahí se busca en el state padre parent_state , en el que a vale 1, ese es el valor de a.
+			 Se hace la suma "hola" + 1 que resulta en "hola1" (+ es concatenación acá)
+	     c3) Se retorna "hola1" como resultado final de foo(b).
+	
+Note como usar clausuras evita hacer la sustitución del la variable x con "hola" físicamente, lo cual sería muy ineficiente.  
+También hace innecesarias las alpha-conversiones.
+	
+Note que como  a no es parámetro de foo sino que está definido en el state de test.js (top level) que es el padre del state de la clausura asociada a foo. 
+Cuando un identificador no está en el state de una clausura se busca recursivamente el parent state 
+(que puede ser el de otra clausura. Si al final de  esa cadena no se encuentra se reporta un error (de semántica dinámica) que en JS es como 
+Uncaught ReferenceError: x is not defined si x es el identificador siendo buscado.
+
+FIN RESUMEN CLAUSURAS  	
+
+    Lenguaje: faceta declarativa  versus operativa
+
+	FP: Programar en niveles altos de pirámide
+	Historia
+		Ensamblador: imperativa no estructurada <70
+		C/Pascal: imperativa estructurada 70-80
+		C++: imperativa + OOP: 90-actual (no se cubrió 1pm)
+    Programación multi-core (MCP) multi-threaded (MTP)
+	FP Principio inmutabilidad (mejor nombre: Referencia transparencial)
+	    NO efectos secundarios
+    FP y PMT, PMC (no se cubrió 1pm, lo revisamos el lunes)
+
+Ejercicios
+1) Vea este código, ejecute y explique las salidas. Este ejercicio tiene que ver con estrategias de evaluación.
+Nota: El caso Times/fibo dura un rato pues calcula fibonacci recursivamente que es MUY ineficiente.
+
+console.log("*** And ***")
+const foo = (msg, value) => (console.log(msg), value)
+
+const fibo_start = n =>  foo(`fibo(${n})`, fibo(n))
+const fibo = n => n <= 1 ? 1 : fibo(n - 1) + fibo(n - 2)
+
+console.log("Caso 1:", foo("A", true) && foo("B", false) )
+console.log("Caso 2:", foo("A", false) && foo("B", false) )
+
+console.log("\n*** Or ***")
+console.log("Caso 1:", foo("A", true) || foo("B", false) )
+console.log("Caso 2:", foo("A", false) || foo("B", false) )
+
+console.log("\n*** Times/fibo ***")
+console.log("Caso 1:", foo("A", fibo(10)) * foo("B", 0) )
+console.log("Caso 2:", foo("A", 0),  foo("B", fibo(10)) )
+
+console.log("\n*** Ternary (Warning!! it can take a big whiiile. Explain why) ***")
+console.log("Caso 1:", foo("A", fibo_start(50) < 0) ? foo("B", fibo_start(100)) : foo("C", 0) )
+
+¿Qué conclusiones se obtienen sobre tipos de estrategias de evaluación?
+
+2)
+Definición:
+Dos expresiones E1 y E2 se dicen Leibniz-equivalentes si para todo programa P que use E1 si cambiamos E1 por E2 en P y ejecutamos P 
+los resultados de P antes y después del cambio en idénticas situaciones son los mismos. Es decir, P es invariante a cambios de E1 por E2 para cualquier P.
+
+El estudiante Carlisto  :-))  afirma que dada la definición de myAdd, la expresión  myAnd(x, y) es Leibniz-equivalente a la expresión x && 
+y  en JS para cualquier x y y ¿Es esa afirmación correcta?
+Justifique su respuesta formalmente.
+
+const myAnd = (x, y) => x && y
+
+3) Justifique o refute: en JS usar const en toda declaración siempre garantiza transparencia referencial
+
+4) Dibuje ASTs y el grafo de memoria (state) del siguiente código y explique la salida.
+Recuerde que cada lambda se convierte en una nueva clausura como se explicó (ver arriba).
+const y = 5
+const x = y => x => x + y
+console.log((y => x(y+1)(4))(y))
